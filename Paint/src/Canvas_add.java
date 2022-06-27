@@ -3,23 +3,28 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Shape;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import javax.swing.JPanel;
 
 public class Canvas_add extends JPanel {
-	Point startP=null;
-	Point endP=null;
+	static Point startP=null;
+	static Point endP=null;
 
 	ArrayList<Point> for_pen;
 	
-	ArrayList<Collect_pen> collection = new ArrayList<Collect_pen>();
+	static Stack<Collect_pen> collection = new Stack<Collect_pen>();
+	static Stack<Collect_pen> collection_redo = new Stack<Collect_pen>();
 	
 	int for_pen_count =0;
-	int index;
 	Point a = null;
 	Point b = null;
 	
@@ -27,6 +32,10 @@ public class Canvas_add extends JPanel {
 	static boolean sc = false;
 	static boolean sl = false;
 	static boolean sp = false;
+	static boolean erase_pixel = false;
+	static boolean redo = false;
+	static boolean spoid = false;
+
 	
 	Canvas_add(){
 		super();//부모 생성자
@@ -63,33 +72,74 @@ public class Canvas_add extends JPanel {
 					g2d.setColor(tmp); //그릴 색깔 지정
 					g2d.setStroke(new BasicStroke(s));// 그리굵기 지정
 					
-					
-					//새로운 도형 그릴 때 불러오기
-					if(on.equals("rect")) {
-						g2d.drawRect(Math.min(sp.x,ep.x), Math.min(sp.y,ep.y), Math.abs(sp.x-ep.x), Math.abs(sp.y-ep.y));
-					}
-					else if(on.equals("line")) {
-						g2d.drawLine(sp.x, sp.y, ep.x, ep.y);
-					}
-					else if(on.equals("circle")) {
-						g2d.drawOval(Math.min(sp.x, ep.x), Math.min(sp.y, ep.y),Math.abs(sp.x- ep.x),Math.abs(sp.y - ep.y));
-					}
-					
-					else if(on.equals("pen")) {
+					if (Canvas_add.spoid == false) {
+						// 새로운 도형 그릴 때 불러오기
+						if (on.equals("rect")) {
+							g2d.drawRect(Math.min(sp.x, ep.x), Math.min(sp.y, ep.y), Math.abs(sp.x - ep.x),
+									Math.abs(sp.y - ep.y));
 
-						System.out.println("index = "+index);
-						for(int j=0; j<collection.get(i).collect_point.size()-1; j++) {
-								Point tmp_a =null;
-								Point tmp_b =null;
+						} else if (on.equals("line")) {
+							g2d.drawLine(sp.x, sp.y, ep.x, ep.y);
+						} else if (on.equals("circle")) {
+							g2d.drawOval(Math.min(sp.x, ep.x), Math.min(sp.y, ep.y), Math.abs(sp.x - ep.x),
+									Math.abs(sp.y - ep.y));
+						}
+
+						else if (on.equals("pen")) {
+
+							for (int j = 0; j < collection.get(i).collect_point.size() - 1; j++) {
+
 								b = collection.get(i).collect_point.get(j);
-								a = collection.get(i).collect_point.get(j+1);
-								
-								g2d.drawLine(b.x,b.y,a.x,a.y);
+								a = collection.get(i).collect_point.get(j + 1);
+								g2d.drawLine(b.x, b.y, a.x, a.y);
 							}
 
-						
+						} else if (on.equals("erase")) {
+
+							for (int j = 0; j < collection.get(i).collect_point.size() - 1; j++) {
+
+								b = collection.get(i).collect_point.get(j);
+								a = collection.get(i).collect_point.get(j + 1);
+								g2d.drawLine(b.x, b.y, a.x, a.y);
+							}
+
+						}
 					}
-					/////////
+					
+					else if (Canvas_add.spoid == true) {
+						// 새로운 도형 그릴 때 불러오기
+						if (on.equals("rect")) {
+							g2d.fillRect(Math.min(sp.x, ep.x), Math.min(sp.y, ep.y), Math.abs(sp.x - ep.x),
+									Math.abs(sp.y - ep.y));
+
+						} else if (on.equals("line")) {
+							g2d.drawLine(sp.x, sp.y, ep.x, ep.y);
+						} else if (on.equals("circle")) {
+							g2d.fillOval(Math.min(sp.x, ep.x), Math.min(sp.y, ep.y), Math.abs(sp.x - ep.x),
+									Math.abs(sp.y - ep.y));
+						}
+
+						else if (on.equals("pen")) {
+
+							for (int j = 0; j < collection.get(i).collect_point.size() - 1; j++) {
+
+								b = collection.get(i).collect_point.get(j);
+								a = collection.get(i).collect_point.get(j + 1);
+								g2d.drawLine(b.x, b.y, a.x, a.y);
+							}
+
+						} else if (on.equals("erase")) {
+
+							for (int j = 0; j < collection.get(i).collect_point.size() - 1; j++) {
+
+								b = collection.get(i).collect_point.get(j);
+								a = collection.get(i).collect_point.get(j + 1);
+								g2d.drawLine(b.x, b.y, a.x, a.y);
+							}
+
+						}
+					}
+					
 					
 					
 				}
@@ -121,60 +171,113 @@ public class Canvas_add extends JPanel {
 			public void mousePressed(MouseEvent e){// 클릭한부분을 시작점으로
 				
 				if(ss==true) {
-					
 					startP = e.getPoint();//사각형_시작점
-//					tmp.sv = e.getPoint();// 사각형_시작점 저장
-//					tmp.co = ColorChooser.color;//사각형_색깔 저장
-//					tmp.name = "rect";// 넣은 도형 저장
-//					tmp.st= Button_stroke.stroke;//사각형_굵기 저장
 					System.out.println("rect 추가");
 					
 				}
 				
 				else if(sl==true) {
 					startP = e.getPoint();//사각형_시작점
-//					tmp.sv = e.getPoint();// 사각형_시작점 저장
-//					tmp.co = ColorChooser.color;//사각형_색깔 저장
-//					tmp.name = "line";// 넣은 도형 저장
-//					tmp.st= Button_stroke.stroke;//사각형_굵기 저장
 					System.out.println("line 추가");
 				}
 				else if(sc==true) {
-					startP = e.getPoint();//사각형_시작점
-//					tmp.sv = e.getPoint();// 사각형_시작점 저장
-//					tmp.co = ColorChooser.color;//사각형_색깔 저장
-//					tmp.name = "cicle";// 넣은 도형 저장
-//					tmp.st= Button_stroke.stroke;//사각형_굵기 저장
+					startP = e.getPoint();//원_시작점
 					System.out.println("circle 추가");
 				}
 				else if(sp==true) {
-					startP = e.getPoint();//원_시작점
-					//tmp.sv = e.getPoint();// 사각형_시작점 저장
-					//tmp.co = ColorChooser.color;//사각형_색깔 저장
-					//tmp.name = "pen";// 넣은 도형 저장
-					//tmp.st= Button_stroke.stroke;//사각형_굵기 저장
+					startP = e.getPoint();//펜_시작점
 					System.out.println("pen 추가");
-					
-					//tmp_point.clear();
 					a = e.getPoint();
-					//tmp_point.add(e.getPoint());
 					for_pen= new ArrayList<Point>();
+					for_pen.add(new Point(e.getX(), e.getY()));
+				}
+				else if(erase_pixel==true) {
+					startP = e.getPoint();//원_시작점
+					System.out.println("지우개 추가");
+					a = e.getPoint();
+					for_pen= new ArrayList<Point>();
+					for_pen.add(new Point(e.getX(), e.getY()));
 					
 				}
+//				else if(spoid ==true) {
+//		               Shape shape = null;
+//		               
+//		               for(int i=collection.size()-1;i>=0;i--){ 
+//
+//		                  Point sp = collection.get(i).sv; // 시작점
+//		                  Point ep = collection.get(i).se; // 끝점
+//		                  String on = collection.get(i).name; // 이름
+//		                  Color tmp = collection.get(i).co; // 색깔
+//		                  Integer s = collection.get(i).st;//굵기
+//		                  
+//		                  if(on.equals("rect")) {
+//		                     shape = new Rectangle2D.Double(sp.x, sp.y, ep.x, ep.y);
+//		                  }
+//		                  else if(on.equals("line")) {
+//		                     shape = new Line2D.Double(sp.x, sp.y, ep.x, ep.y);
+//		                  }
+//		                  else if(on.equals("circle")) {
+//		                     shape = new Ellipse2D.Double(sp.x, sp.y, ep.x, ep.y);
+//		                  }
+//		                  
+//		                  else if(on.equals("pen")) {
+//
+//		                	  for (int j = 0; j < collection.get(i).collect_point.size() - 1; j++) {
+//
+//									b = collection.get(i).collect_point.get(j);
+//									a = collection.get(i).collect_point.get(j + 1);
+//									shape = new Line2D.Double(b.x, b.y, a.x, a.y);
+//								}
+//
+//		                  }
+//		                  else if(on.equals("erase")) {
+//		                	  for (int j = 0; j < collection.get(i).collect_point.size() - 1; j++) {
+//
+//									b = collection.get(i).collect_point.get(j);
+//									a = collection.get(i).collect_point.get(j + 1);
+//									shape = new Line2D.Double(b.x, b.y, a.x, a.y);
+//								}
+//
+//		                  }
+//		                  if(shape.contains(e.getPoint().x, e.getPoint().y)) {
+//		                     ColorChooser.color = tmp;
+//		                     MakeFrame.c.setBackground(tmp);
+//		                     break;
+//		                     //repaint();
+//		                  }
+//		                  
+//		                     
+//		                  
+//		               }
+//
+//		            }
 				
+	
+				
+
 				
 			}
 			
 			
 			public void mouseDragged(MouseEvent e){
-				if(sp==true) {
+				if(erase_pixel==true) {
 					b =a;
 					a = e.getPoint();
-					//tmp_point.add(e.getPoint());
-					//System.out.println("tmp_point에 "+e.getPoint()+"추가");
+
 					endP = e.getPoint();
-					//System.out.println("진행중");
-					
+							
+					Graphics g = getGraphics();
+					Graphics2D g2d = (Graphics2D) g;
+					g2d.setColor(Color.WHITE);
+					g2d.setStroke(new BasicStroke(Button_erase.stroke));
+					g2d.drawLine(b.x, b.y, a.x, a.y);//그리다
+					for_pen.add(new Point(e.getX(), e.getY()));
+				}
+				
+				else if(sp==true) {
+					b=a;
+					a=e.getPoint();
+					endP = e.getPoint();				
 					
 					Graphics g = getGraphics();
 					Graphics2D g2d = (Graphics2D) g;
@@ -189,9 +292,83 @@ public class Canvas_add extends JPanel {
 				else if(ss==true||sl==true||sc==true){
 				
 				endP = e.getPoint();
-				//System.out.println("진행중");
 				repaint();
 				}
+				
+				else if(spoid ==true) {
+		               Shape shape = null;
+		               
+		               for(int i=collection.size()-1;i>=0;i--){ 
+
+		                  Point sp = collection.get(i).sv; // 시작점
+		                  Point ep = collection.get(i).se; // 끝점
+		                  String on = collection.get(i).name; // 이름
+		                  Color tmp = collection.get(i).co; // 색깔
+		                  Integer s = collection.get(i).st;//굵기
+		                  
+		                  if(on.equals("rect")) {
+		                     shape = new Rectangle2D.Double( Math.min(sp.x, ep.x),Math.min(sp.y, ep.y), Math.abs(sp.x - ep.x), Math.abs(sp.y - ep.y));
+		                  }
+		                  else if(on.equals("line")) {
+		                     shape = new Line2D.Double(sp.x, sp.y, ep.x, ep.y);
+		                  }
+		                  else if(on.equals("circle")) {
+		                     shape = new Ellipse2D.Double(Math.min(sp.x, ep.x),Math.min(sp.y, ep.y), Math.abs(sp.x - ep.x), Math.abs(sp.y - ep.y));
+		                  }
+		                  
+		                  else if(on.equals("pen")) {
+
+		                	  for (int j = 0; j < collection.get(i).collect_point.size() - 1; j++) {
+
+									b = collection.get(i).collect_point.get(j);
+									a = collection.get(i).collect_point.get(j);
+									System.out.println("------------------------------");
+									System.out.println(a);
+									System.out.println(e.getPoint());
+									System.out.println("------------------------------");
+									if(e.getPoint().equals(a)) {
+										System.out.println("같음");
+										ColorChooser.color = tmp;
+					                    MakeFrame.c.setBackground(tmp);
+										
+									}
+									shape = new Line2D.Double(b.x, b.y, a.x, a.y);	
+									
+									
+								}
+		                	  
+
+		                  }
+		                  else if(on.equals("erase")) {
+		                	  for (int j = 0; j < collection.get(i).collect_point.size() - 1; j++) {
+
+									b = collection.get(i).collect_point.get(j);
+									a = collection.get(i).collect_point.get(j + 1);
+									shape = new Line2D.Double(b.x, b.y, a.x, a.y);
+									System.out.println("같음");
+									ColorChooser.color = tmp;
+				                    MakeFrame.c.setBackground(tmp);
+				                    if(shape.contains(e.getPoint().x, e.getPoint().y)) {
+					                     ColorChooser.color = tmp;
+					                     MakeFrame.c.setBackground(tmp);
+					                     break;
+					                     //repaint();
+					                  }
+								}
+
+		                  }
+		                  if(shape.contains(e.getPoint().x, e.getPoint().y)) {
+			                     ColorChooser.color = tmp;
+			                     MakeFrame.c.setBackground(tmp);
+			                     break;
+			                     //repaint();
+			                  }
+		                  
+		                  
+
+		               }
+
+		            }
 				
 			}
 			
@@ -201,9 +378,7 @@ public class Canvas_add extends JPanel {
 					endP = e.getPoint();
 					String temp_name="";
 					repaint(); // 다시그려라
-					index = for_pen_count--;
 
-					
 					if(ss==true) temp_name = "rect";
 					else if(sl==true) temp_name ="line";
 					else if(sc==true) temp_name ="circle";
@@ -225,20 +400,21 @@ public class Canvas_add extends JPanel {
 				
 				else if(sp==true) {
 					
-					
 					endP = e.getPoint();
-
-					//tmp = new Collect_shape(startP, endP,"pen", ColorChooser.color,Button_stroke.stroke);
+					for_pen.add(new Point(e.getX(), e.getY()));
 					collection.add(new Collect_pen(startP, endP,"pen",ColorChooser.color, Button_stroke.stroke, for_pen));
 					a=e.getPoint();
-					//tmp_point.add(e.getPoint());
-					//System.out.println("tmp_point에 "+e.getPoint()+"추가");
-					//for_pen.add(tmp_point);
-					//for_pen_count++;
-					//index = for_pen_count--;
-					//System.out.println("index확인용: "+index);
 					
 				}
+				else if(erase_pixel==true) {
+					
+					endP = e.getPoint();
+					for_pen.add(new Point(e.getX(), e.getY()));
+					collection.add(new Collect_pen(startP, endP,"erase",Color.WHITE, Button_erase.stroke, for_pen));
+					a=e.getPoint();
+					
+				}
+				
 
 			}
 		}
@@ -289,6 +465,7 @@ public class Canvas_add extends JPanel {
 			
 			
 		}
+		
 		
 		
 

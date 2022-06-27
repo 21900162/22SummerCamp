@@ -1,10 +1,12 @@
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class MakeFrame extends JFrame{
 	//패널 만들기
@@ -20,9 +22,13 @@ public class MakeFrame extends JFrame{
 	static JPanel in_b3_2 = new JPanel();
 	static JPanel in_b4 = new JPanel();
 	
+	static JTextField num = new JTextField();
+	
 	static Canvas_add for_draw = new Canvas_add();//그리기용 canvas
-	
-	
+	ImageIcon erase_smallest = new ImageIcon("Button_image/erase3.png");
+	ImageIcon erase_small = new ImageIcon("Button_image/erase_small.png");
+	ImageIcon erase_big = new ImageIcon("Button_image/erase_big.png");
+
 	Button_order bf = new Button_order("←");
 	Button_order af = new Button_order("→");
 	Button_shape[] sbtn = new Button_shape[5];
@@ -30,6 +36,11 @@ public class MakeFrame extends JFrame{
 	Button_stroke m = new Button_stroke("+");
 	Button_stroke p = new Button_stroke("-");
 	Button_erase er = new Button_erase("erase");
+	static Button_erase normal;
+	static Button_erase small;
+	static Button_erase big;
+	static Button_erase shape_erase;
+	static Button_erase spoid;
 	static Button_color c=new Button_color("색");
 
 	public MakeFrame() {
@@ -40,18 +51,29 @@ public class MakeFrame extends JFrame{
 			sbtn[i].addActionListener(new MyListener());
 		}
 		
+
 		for_draw.setBounds(110,0,1080,720);
 		for_draw.setBackground(Color.WHITE);
-		
-		
-		
-		//f1.getContentPane().setBackground(Color.LIGHT_GRAY);
+		normal = new Button_erase(erase_small);
+		small = new Button_erase(erase_smallest);
+		big = new Button_erase(erase_big);
+		spoid = new Button_erase(erase_big);
+		bf.addActionListener(new MyListener());
+		af.addActionListener(new MyListener());
+		er.addActionListener(new MyListener());
+		small.addActionListener(new MyListener());
+		normal.addActionListener(new MyListener());
+		big.addActionListener(new MyListener());
+		shape_erase = new Button_erase(erase_small);
+		spoid.addActionListener(new MyListener());
+			
 
 		//맨뒤 button panel설정
 
 		button_back.setBounds(0,0,110,720);;
 		button_back.setLayout(null);
 		button_back.setBackground(Color.LIGHT_GRAY);
+		
 		
 		//첫번째 Panel설정
 		b1.setBounds(5,10,100,20);
@@ -70,6 +92,13 @@ public class MakeFrame extends JFrame{
 		b2.add(sbtn[2]);
 		b2.add(sbtn[3]);
 		button_back.add(b2);
+		
+		num.setBounds(5,155,100,20);
+		num.setHorizontalAlignment(JTextField.RIGHT);
+		num.setFont(new Font("맑은 고딕", Font.PLAIN, 15));
+		num.setEditable(false);
+		num.setText(""+Button_stroke.stroke);
+		button_back.add(num);
 		
 		//세번째 Panel설정
 		b3.setBounds(5,180,100,110);
@@ -96,12 +125,20 @@ public class MakeFrame extends JFrame{
 		button_back.add(b3);
 		
 		//네번째 Panel설정
-		b4.setBounds(5,300,100,60);
+		b4.setBounds(5,300,100,100);
 		b4.setBackground(Color.LIGHT_GRAY);
-		b4.add(er);
+		b4.setLayout(new GridLayout(2,2,5,5));
+		b4.add(small);
+		b4.add(normal);
+		b4.add(big);
+		b4.add(spoid);
+		//b4.add(er);
 		button_back.add(b4);
 		
+		
+
 		f1.add(for_draw);
+		
 		f1.add(button_back);
 		
 		

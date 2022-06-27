@@ -5,9 +5,13 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 public class Button_erase extends JButton{
+	
+	static int stroke = 5; 
+	
 	public Button_erase() {
 		super();
 		decorate();
@@ -17,6 +21,12 @@ public class Button_erase extends JButton{
 		super(string);
 		decorate();
 	}
+	public Button_erase(ImageIcon erase_small) {
+		
+		super(erase_small);
+		decorate();
+	}
+
 	protected void decorate() {
         setBorderPainted(false);
         setOpaque(false);
@@ -50,7 +60,7 @@ public class Button_erase extends JButton{
 	    graphics.setColor(getForeground());
 	    graphics.setFont(getFont());
 	    graphics.drawString(getText(), textX, textY);
-	    graphics.dispose();
+	    //graphics.dispose();
 
 	    super.paintComponent(g);
 	}
