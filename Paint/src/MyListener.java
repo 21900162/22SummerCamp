@@ -27,7 +27,7 @@ public class MyListener extends JFrame implements ActionListener {
 					Canvas_add.erase_pixel=false;
 					Canvas_add.redo = false;
 					Canvas_add.collection_redo.clear();
-					Canvas_add.spoid = false;
+//					Canvas_add.spoid = false;
 
 				}
 				else if(e.getActionCommand().equals("↗")) {
@@ -38,7 +38,7 @@ public class MyListener extends JFrame implements ActionListener {
 					Canvas_add.erase_pixel=false;
 					Canvas_add.redo = false;
 					Canvas_add.collection_redo.clear();
-					Canvas_add.spoid = false;
+//					Canvas_add.spoid = false;
 
 				}
 				else if(e.getActionCommand().equals("○")) {
@@ -49,7 +49,7 @@ public class MyListener extends JFrame implements ActionListener {
 					Canvas_add.erase_pixel=false;
 					Canvas_add.redo = false;
 					Canvas_add.collection_redo.clear();
-					Canvas_add.spoid = false;
+//					Canvas_add.spoid = false;
 
 				}
 				else if(e.getActionCommand().equals("~")) {
@@ -60,7 +60,7 @@ public class MyListener extends JFrame implements ActionListener {
 					Canvas_add.erase_pixel=false;
 					Canvas_add.redo = false;
 					Canvas_add.collection_redo.clear();
-					Canvas_add.spoid = false;
+//					Canvas_add.spoid = false;
 
 				}
 				else if(e.getActionCommand().equals("+")) {

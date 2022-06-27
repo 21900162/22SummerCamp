@@ -28,6 +28,7 @@ public class MakeFrame extends JFrame{
 	ImageIcon erase_smallest = new ImageIcon("Button_image/erase3.png");
 	ImageIcon erase_small = new ImageIcon("Button_image/erase_small.png");
 	ImageIcon erase_big = new ImageIcon("Button_image/erase_big.png");
+	ImageIcon spoid_icon = new ImageIcon("Button_image/spoid.png");
 
 	Button_order bf = new Button_order("←");
 	Button_order af = new Button_order("→");
@@ -57,7 +58,7 @@ public class MakeFrame extends JFrame{
 		normal = new Button_erase(erase_small);
 		small = new Button_erase(erase_smallest);
 		big = new Button_erase(erase_big);
-		spoid = new Button_erase(erase_big);
+		spoid = new Button_erase(spoid_icon);
 		bf.addActionListener(new MyListener());
 		af.addActionListener(new MyListener());
 		er.addActionListener(new MyListener());

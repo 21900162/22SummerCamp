@@ -352,7 +352,7 @@ public class Canvas_add extends JPanel {
 					                     ColorChooser.color = tmp;
 					                     MakeFrame.c.setBackground(tmp);
 					                     break;
-					                     
+					                     //repaint();
 					                  }
 								}
 
