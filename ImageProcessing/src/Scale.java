@@ -10,8 +10,8 @@ public class Scale extends JPanel{
 	}
 	public void paintComponent(Graphics g) {
 		Graphics2D g2=(Graphics2D)g;
-		if(Frame.change_image!= null) {
-			g2.drawImage(Frame.change_image,0,0,700,700,this);
+		if(Frame.zoomImage!= null) {
+			g2.drawImage(Frame.zoomImage,0,0,700,700,this);
 		}
 	}
 }

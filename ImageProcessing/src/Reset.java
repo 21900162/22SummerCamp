@@ -9,11 +9,11 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
-public class BlackWhite extends JPanel {
+public class Reset extends JPanel {
 	int startx;
 	int starty;
 	
-	public BlackWhite(int startx, int starty) throws IOException {
+	public Reset(int startx, int starty) throws IOException {
 		this.startx = startx;
 		this.starty = starty;
 		
@@ -48,3 +48,4 @@ public class BlackWhite extends JPanel {
          }
 	}
 }
+

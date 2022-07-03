@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -25,7 +26,7 @@ public class Frame extends JFrame {
 	static BufferedImage change_image;
 	static BufferedImage zoomImage;
 	static BufferedImage bright_image;
-	
+	File file ;
 	
 	// JFrame image_choose = new JFrame();
 	JPanel menu;
@@ -38,13 +39,13 @@ public class Frame extends JFrame {
 	JButton button1;
 	JButton button2;
 	JButton button3;
+	JButton button4;
 	ImagePanel newimage;
 	JFileChooser chooser;
 	JSlider slider = new JSlider(-255,100,0);;
 	BrightImage brightimage;
 	Scale scale;
 	BlackWhite blackwhite;
-	
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -69,12 +70,14 @@ public class Frame extends JFrame {
 		button1 = new JButton("흑백 전환");
 		button2 = new JButton("밝기 조절");
 		button3 = new JButton("zoom");
+		button4 = new JButton("reset");
 
 		button.setBounds(0, 0, 100, 100);
 		button1.setBounds(130, 0, 100, 100);
 		button2.setBounds(260, 0, 100, 100);
 		button3.setBounds(390, 0, 100, 100);
-
+		button4.setBounds(520, 0, 100, 100);
+		
 		menu.setBounds(0, 0, WIDTH, 100);
 		menu.setBackground(Color.WHITE);
 		menu.setLayout(null);
@@ -83,11 +86,13 @@ public class Frame extends JFrame {
 		menu.add(button1);
 		menu.add(button2);
 		menu.add(button3);
+		menu.add(button4);
 
 		button.addActionListener(new MyListener());
 		button1.addActionListener(new MyListener());
 		button2.addActionListener(new MyListener());
 		button3.addActionListener(new MyListener());
+		button4.addActionListener(new MyListener());
 		
 		scale = new Scale();
 		
@@ -131,12 +136,24 @@ public class Frame extends JFrame {
 					brightimage = new BrightImage(850, 200);
 					newimage = new ImagePanel(50, 200);
 					blackwhite = new BlackWhite(850, 200);
+					file = chooser.getSelectedFile();
 					
-					newimage.repaint();
+					zoomImage = ImageIO.read(chooser.getSelectedFile());
+					
 					newimage.setBounds(50, 200,700,700);
+					
 					Frame.this.add(newimage);
 					Frame.this.add(blackwhite);
 					Frame.this.add(brightimage);
+					Frame.this.add(scale);
+
+					
+					blackwhite.setVisible(false);
+					brightimage.setVisible(false);
+					scale.setVisible(false);
+
+					newimage.repaint();
+					Frame.this.repaint();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -146,8 +163,23 @@ public class Frame extends JFrame {
 
 			
 			if (e.getActionCommand().equals("흑백 전환")) {
+				for (int y = 0; y < Frame.change_image.getHeight(); y++) {
+			         for (int x = 0; x < Frame.change_image.getWidth(); x++) {
+			            int pixel = Frame.change_image.getRGB(x,y);
+			            Color color = new Color(pixel, true);
+			            int red = color.getRed();
+			            int green = color.getGreen();
+			            int blue = color.getBlue();
+			            int average = (red+green+blue)/3;
 
+			            //Creating new Color object
+			            color = new Color(average, average, average);
+			            //Setting new Color object to the image
+			            Frame.change_image.setRGB(x, y, color.getRGB());
+			         }
+			      }
 				brightimage.setVisible(false);
+
 				scale.setVisible(false);
 				blackwhite.setVisible(true);
 				blackwhite.repaint();
@@ -156,15 +188,26 @@ public class Frame extends JFrame {
 
 			}
 			
+			if (e.getActionCommand().equals("reset")) {
+				try {
+					change_image  = ImageIO.read(file);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				brightimage.repaint();
+				blackwhite.repaint();
+			}
+			
 			if (e.getActionCommand().equals("밝기 조절")) {
 				System.out.println("클릭");
 					
-				bright_image = Frame.copyImage(Frame.change_image);
+				bright_image = copyImage(change_image);
 				
-				brightimage.repaint();					
 				brightimage.setVisible(true);
 				blackwhite.setVisible(false);
 				scale.setVisible(false);
+				brightimage.repaint();
 				
 				//slider 
 				slider.setValue(0);
@@ -226,8 +269,8 @@ public class Frame extends JFrame {
 				scale.setVisible(true);
 				newimage.addMouseListener(new MyListener());
 				newimage.addMouseMotionListener(new MyListener());
-				Frame.this.add(scale);
-				zoomImage = copyImage(change_image);
+				
+				
 				
 				System.out.println("뿅");
 
@@ -239,13 +282,13 @@ public class Frame extends JFrame {
 		public void mouseDragged(MouseEvent e) {
 			
 				// TODO Auto-generated method stub
-				int x = e.getX() * Frame.zoomImage.getWidth() / 699 - 190;
-				int y = e.getY() * Frame.zoomImage.getHeight() / 699 - 190;
-				if(e.getX() <= Frame.zoomImage.getWidth() && e.getY() <= Frame.zoomImage.getHeight()) {
+				int x = e.getX() * Frame.original_image.getWidth() / 699 - 190;
+				int y = e.getY() * Frame.original_image.getHeight() / 699 - 190;
+				if(e.getX() <= Frame.original_image.getWidth() && e.getY() <= Frame.original_image.getHeight()) {
 					System.out.println("X: " + e.getX() + " Y: " + e.getY());
-					System.out.println(Frame.zoomImage.getWidth());
-					System.out.println(Frame.zoomImage.getHeight());
-					change_image = zoomImage.getSubimage(x, y, 400, 400);	
+					System.out.println(Frame.original_image.getWidth());
+					System.out.println(Frame.original_image.getHeight());
+					zoomImage = original_image.getSubimage(x, y, 400, 400);	
 				}
 				Frame.this.scale.repaint();
 			
