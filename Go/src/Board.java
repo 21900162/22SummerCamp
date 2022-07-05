@@ -16,13 +16,14 @@ import javax.swing.JPanel;
 public class Board extends JPanel{
 	
 	Ellipse2D.Double [][] point = new Ellipse2D.Double[19][19];
-	int [][] check = new int[19][19];
+	static int [][] check = new int[19][19];
 	
-	ArrayList<Integer> x = new ArrayList<Integer>();//행
-	ArrayList<Integer> y = new ArrayList<Integer>();//열
+	static ArrayList<Integer> x = new ArrayList<Integer>();//행
+	static ArrayList<Integer> y = new ArrayList<Integer>();//열
 	
 	int newX = 0;
 	int newY = 0;
+	boolean first = true;
 	
 	String result;
 	
@@ -43,7 +44,8 @@ public class Board extends JPanel{
 			System.out.println(check[x][y]+"승리");
 			if(check[x][y] ==2) result = "백돌";
 			if(check[x][y] ==1) result = "흑돌";
-			JOptionPane.showMessageDialog(null, result + "승리!", "결과",JOptionPane.INFORMATION_MESSAGE);
+			Frame.turn.setText(result + "win!!");
+			//JOptionPane.showMessageDialog(null, result + "승리!", "결과",JOptionPane.INFORMATION_MESSAGE);
 			return check[x][y];
 			
 		}
@@ -51,21 +53,24 @@ public class Board extends JPanel{
 			System.out.println(check[x][y]+"승리");
 			if(check[x][y] ==2) result = "백돌";
 			if(check[x][y] ==1) result = "흑돌";
-			JOptionPane.showMessageDialog(null, result + "승리!", "결과",JOptionPane.INFORMATION_MESSAGE);
+			Frame.turn.setText(result + "win!!");
+			//JOptionPane.showMessageDialog(null, result + "승리!", "결과",JOptionPane.INFORMATION_MESSAGE);
 			return check[x][y];
 		}
 		else if(checkLRDiagonal(x, y, check[x][y]) >= 6) {
 			System.out.println(check[x][y]+"승리");
 			if(check[x][y] ==2) result = "백돌";
 			if(check[x][y] ==1) result = "흑돌";
-			JOptionPane.showMessageDialog(null, result + "승리!", "결과",JOptionPane.INFORMATION_MESSAGE);
+			Frame.turn.setText(result + "win!!");
+			//JOptionPane.showMessageDialog(null, result + "승리!", "결과",JOptionPane.INFORMATION_MESSAGE);
 			return check[x][y];
 		}
 		else if(checkRLDiagonal(x, y, check[x][y]) >= 6) {
 			System.out.println(check[x][y]+"승리");
 			if(check[x][y] ==2) result = "백돌";
 			if(check[x][y] ==1) result = "흑돌";
-			JOptionPane.showMessageDialog(null, result + "승리!", "결과",JOptionPane.INFORMATION_MESSAGE);
+			Frame.turn.setText(result + "win!!");
+			//JOptionPane.showMessageDialog(null, result + "승리!", "결과",JOptionPane.INFORMATION_MESSAGE);
 			return check[x][y];
 		}
 
@@ -297,23 +302,36 @@ public class Board extends JPanel{
 
 			// TODO Auto-generated method stub
 			for (int i = 0; i < point.length; i++) {
-				for (int j = 0; j < point[0].length; j++) {//열
-					if(point[i][j].contains(e.getPoint())) {
-						System.out.println("i = "+ i);
-						System.out.println("j = " +j);
-						x.add(i);//열저장
-						y.add(j);//행저장
-						newX= i;
-						newY = j;
-						System.out.println("newX : "+newX+" newY: "+newY);
+				for (int j = 0; j < point[0].length; j++) {
+
+					if (point[i][j].contains(e.getPoint())) {// 눌렀을 때
+						System.out.println("i = " + i);
+						System.out.println("j = " + j);
+						if(check[j][i]==0) {
+							
+							
+							
+							x.add(i);// 열저장
+							y.add(j);// 행저장
+							newX = i;
+							newY = j;
+							
+							if (x.size() < no) Frame.turn.setText("Setting Blocks");
+							else if (x.size() - no == 0) Frame.turn.setText("Black's Turn");
+							else if (x.size() - no == 1) Frame.turn.setText("White's Turn");
+							else if (((x.size() + 1 - no) / 2) % 2 == 0) Frame.turn.setText("Black's Turn");
+							else Frame.turn.setText("White's Turn");
+						}
+
+						System.out.println("newX : " + newX + " newY: " + newY);
 						
 						
 					}
+					
 				}
 			}
 			
 			Board.this.repaint();
-			
 			
 		}
 
